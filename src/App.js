@@ -1,25 +1,36 @@
-import logo from './logo.svg';
 import './App.css';
 
+import React, { useState } from 'react';
+import axios from 'axios';
+
 function App() {
+  const [url, setUrl] = useState('');
+  const [classification, setClassification] = useState('');
+  const [background,setBackground] =useState('white');
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const response = await axios.get(`http://127.0.0.1:5000/classify?url=${url}`);
+    setClassification(response.data.classification)
+    setBackground(Mapping[response.data.classification])
+    console.log(response.data.classification);
+  }
+  const Mapping = {
+    "Legitimate": "#80FFAA",
+    "Phishing": "#FF21AD",
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="container" style={{
+        backgroundColor: background
+      }}>
+        <form onSubmit={handleSubmit}>
+          <h1>Enter URL</h1>
+            <input type="text" value={url} onChange={(event) => setUrl(event.target.value)} />
+          <input type="submit" className="bn47" value="Submit" />
+        </form>
+        {classification !== null && <h1>Classification result: {classification}</h1>}
+      </div>
   );
 }
 
 export default App;
+
